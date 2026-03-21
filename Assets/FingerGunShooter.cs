@@ -1,5 +1,4 @@
 using UnityEngine;
-using System.Collections.Generic;
 
 public class FingerGunShooter : MonoBehaviour
 {
@@ -12,78 +11,72 @@ public class FingerGunShooter : MonoBehaviour
     [Header("Paintball Settings")]
     public GameObject paintballPrefab;
     public float shootForce = 35f;
-    
-    [Range(0, 1)]
-    public float triggerThreshold = 0.8f; // How much you have to bend to fire
+    public float damagePerShot = 1.0f;
 
-    private bool hasFiredLeft = false;
+    [Range(0, 1)] public float thumbThreshold = 0.7f; // How curled the thumb needs to be to fire
+
+    private bool hasFiredLeft  = false;
     private bool hasFiredRight = false;
 
     void Update()
     {
-        if (leftHand.IsTracked) CheckTrigger(leftHand, leftSkeleton, ref hasFiredLeft);
-        if (rightHand.IsTracked) CheckTrigger(rightHand, rightSkeleton, ref hasFiredRight);
+        if (leftHand.IsTracked)  CheckThumb(leftHand,  leftSkeleton,  ref hasFiredLeft);
+        if (rightHand.IsTracked) CheckThumb(rightHand, rightSkeleton, ref hasFiredRight);
     }
 
-    void CheckTrigger(OVRHand hand, OVRSkeleton skeleton, ref bool hasFired)
+    void CheckThumb(OVRHand hand, OVRSkeleton skeleton, ref bool hasFired)
     {
-        // Detect the "bend" of the index finger
-        float indexPinch = hand.GetFingerPinchStrength(OVRHand.HandFinger.Index);
+        float thumbCurl = hand.GetFingerPinchStrength(OVRHand.HandFinger.Thumb);
 
-        // Logic: If the finger is curled tightly (like a trigger pull)
-        if (indexPinch >= triggerThreshold)
+        if (thumbCurl >= thumbThreshold)
         {
             if (!hasFired)
             {
-                ShootFromFist(hand, skeleton);
-                hasFired = true; 
+                ShootFromIndex(skeleton);
+                hasFired = true;
             }
         }
-        else if (indexPinch < 0.2f) // Must release the finger to shoot again
+        else if (thumbCurl < 0.3f)
         {
             hasFired = false;
         }
     }
 
-    void ShootFromFist(OVRHand hand, OVRSkeleton skeleton)
+    void ShootFromIndex(OVRSkeleton skeleton)
     {
-        Transform knuckle = null;
-        Transform wrist = null;
+        Transform indexTip     = null;
+        Transform indexKnuckle = null;
 
         foreach (var bone in skeleton.Bones)
         {
-            // We use the Index Knuckle as the barrel start
-            if (bone.Id == OVRSkeleton.BoneId.Hand_Index1) knuckle = bone.Transform;
-            if (bone.Id == OVRSkeleton.BoneId.Hand_WristRoot) wrist = bone.Transform;
+            switch (bone.Id)
+            {
+                case OVRSkeleton.BoneId.Hand_IndexTip: indexTip     = bone.Transform; break;
+                case OVRSkeleton.BoneId.Hand_Index1:   indexKnuckle = bone.Transform; break;
+            }
         }
 
-        if (knuckle == null || wrist == null) return;
+        if (indexTip == null || indexKnuckle == null) return;
 
-        // Direction: From the wrist through the knuckle (the "forward" of your fist)
-        Vector3 shootDirection = (knuckle.position - wrist.position).normalized;
-        
-        // Tilt it slightly down as requested before
-        shootDirection = Vector3.Lerp(shootDirection, Vector3.down, 0.1f).normalized;
+        Vector3 fingerDir = (indexTip.position - indexKnuckle.position).normalized;
+        Vector3 spawnPos  = indexTip.position + fingerDir * 0.05f;
 
-        // Spawn right at the knuckle, pushed out slightly
-        Vector3 spawnPos = knuckle.position + (shootDirection * 0.05f); 
+        GameObject ball = Instantiate(paintballPrefab, spawnPos, Quaternion.LookRotation(fingerDir));
 
-        GameObject ball = Instantiate(paintballPrefab, spawnPos, Quaternion.identity);
-        
-        if (ball.GetComponent<PaintballSticker>() == null)
-            ball.AddComponent<PaintballSticker>();
-
+        PaintballSticker sticker = ball.AddComponent<PaintballSticker>();
+        sticker.damageValue = damagePerShot;
         ball.GetComponent<Renderer>().material.color = new Color(1.0f, 0.5f, 0.0f);
 
         Rigidbody rb = ball.GetComponent<Rigidbody>();
         if (rb != null)
         {
             rb.isKinematic = false;
-            rb.useGravity = true;
+            rb.useGravity  = true;
+            rb.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic;
             rb.linearVelocity = Vector3.zero;
-            rb.AddForce(-shootDirection * shootForce, ForceMode.Impulse);
+            rb.AddForce(fingerDir * shootForce, ForceMode.Impulse);
         }
 
-        Destroy(ball, 10f);
+        Destroy(ball, 5f);
     }
 }

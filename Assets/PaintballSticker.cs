@@ -4,7 +4,8 @@ public class PaintballSticker : MonoBehaviour
 {
     private bool hasStuck = false;
     private float spawnTime;
-    private const float GRACE_PERIOD = 0.05f; // Seconds to ignore collisions
+    private const float GRACE_PERIOD = 0.05f;
+    public float damageValue = 10.0f; // How much damage one paintball does
 
     void Start()
     {
@@ -13,12 +14,20 @@ public class PaintballSticker : MonoBehaviour
 
     void OnCollisionEnter(Collision collision)
     {
-        // Prevent sticking to self or immediate hand contact
         if (hasStuck || (Time.time - spawnTime) < GRACE_PERIOD) return;
 
+        // 1. Check if we hit a Target
+        TargetSlime target = collision.gameObject.GetComponentInParent<TargetSlime>();
+    if (target != null)
+    {
+        target.Got(damageValue);
+        Destroy(gameObject); 
+        return;
+    }
+
+        // 2. Otherwise, stick to the wall/floor (MRUK)
         hasStuck = true;
 
-        // Stop physics movement
         Rigidbody rb = GetComponent<Rigidbody>();
         if (rb != null)
         {
@@ -26,15 +35,13 @@ public class PaintballSticker : MonoBehaviour
             rb.linearVelocity = Vector3.zero;
         }
 
-        // Parent to the object (Wall/Floor) so it stays put
         transform.SetParent(collision.transform);
 
-        // Visual "Splat" - Rotate to face the surface and flatten
         ContactPoint contact = collision.contacts[0];
         transform.position = contact.point;
         transform.rotation = Quaternion.LookRotation(contact.normal);
-        
-        // Scale it to look like a flat paint circle
         transform.localScale = new Vector3(0.08f, 0.01f, 0.08f);
+        
+        Destroy(gameObject, 10f);
     }
 }
