@@ -4,10 +4,13 @@ using Meta.XR.MRUtilityKit;
 
 public class GermSpawnerMR : MonoBehaviour
 {
-    public GameObject germPrefab;
+    [Header("Germ Prefabs")]
+    public GameObject germPrefabA;
+    public GameObject germPrefabB;
 
-    public int maxGerms = 10;
-    public float spawnInterval = 2f;
+    [Header("Spawn Count")]
+    public int maxGerms = 20;
+    public float spawnInterval = 1.5f;
 
     [Header("Spawn Area")]
     public float spawnRange = 2.5f;
@@ -18,9 +21,9 @@ public class GermSpawnerMR : MonoBehaviour
     public float playerSafeRadius = 1.0f;
 
     private int currentGerms = 0;
-    private MRUKRoom room;
-
     private bool canSpawn = false;
+
+    private MRUKRoom room;
 
     void Start()
     {
@@ -37,8 +40,8 @@ public class GermSpawnerMR : MonoBehaviour
         yield return new WaitUntil(() => MRUK.Instance != null && MRUK.Instance.GetCurrentRoom() != null);
 
         room = MRUK.Instance.GetCurrentRoom();
+        Debug.Log("MRUK Ready -> Germ spawner initialized");
 
-        Debug.Log("MRUK Ready → Germ spawner initialized");
         StartCoroutine(SpawnLoop());
     }
 
@@ -72,7 +75,6 @@ public class GermSpawnerMR : MonoBehaviour
         if (room == null) return;
 
         MRUKAnchor floor = room.GetFloorAnchor();
-
         if (floor == null)
         {
             Debug.Log("No floor found!");
@@ -81,7 +83,6 @@ public class GermSpawnerMR : MonoBehaviour
 
         Vector3 center = floor.GetAnchorCenter();
         Vector3 spawnPos = center;
-
         bool foundValidPosition = false;
 
         for (int i = 0; i < 20; i++)
@@ -96,9 +97,7 @@ public class GermSpawnerMR : MonoBehaviour
                 Vector3 playerFlat = new Vector3(playerCam.position.x, 0f, playerCam.position.z);
                 Vector3 spawnFlat = new Vector3(testPos.x, 0f, testPos.z);
 
-                float distanceToPlayer = Vector3.Distance(playerFlat, spawnFlat);
-
-                if (distanceToPlayer < playerSafeRadius)
+                if (Vector3.Distance(playerFlat, spawnFlat) < playerSafeRadius)
                 {
                     continue;
                 }
@@ -115,12 +114,29 @@ public class GermSpawnerMR : MonoBehaviour
             return;
         }
 
-        Instantiate(germPrefab, spawnPos, Quaternion.identity);
+        GameObject prefabToSpawn = GetRandomGermPrefab();
+        if (prefabToSpawn == null)
+        {
+            Debug.LogWarning("No germ prefab assigned.");
+            return;
+        }
+
+        Instantiate(prefabToSpawn, spawnPos, Quaternion.identity);
         currentGerms++;
     }
 
-    void OnGermDeath()
+    GameObject GetRandomGermPrefab()
+    {
+        if (germPrefabA == null && germPrefabB == null) return null;
+        if (germPrefabA != null && germPrefabB == null) return germPrefabA;
+        if (germPrefabA == null && germPrefabB != null) return germPrefabB;
+
+        return Random.value < 0.5f ? germPrefabA : germPrefabB;
+    }
+
+    public void OnGermDeath()
     {
         currentGerms--;
+        if (currentGerms < 0) currentGerms = 0;
     }
 }

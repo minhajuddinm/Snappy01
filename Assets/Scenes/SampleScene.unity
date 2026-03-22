@@ -1593,8 +1593,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5bbb9ded4c3d9a942a92d2a1c846cfb2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  germPrefab: {fileID: 4510372319125445038, guid: 65d42f3a784ca8b4d9e69a061b5b70f7, type: 3}
-  maxGerms: 10
+  germPrefabA: {fileID: 4510372319125445038, guid: 65d42f3a784ca8b4d9e69a061b5b70f7, type: 3}
+  germPrefabB: {fileID: 5895652894776524755, guid: 988e3f1955c65bc42b6993a74b47b2dd, type: 3}
+  maxGerms: 20
   spawnInterval: 5
   spawnRange: 3
   floorOffsetY: 0.05

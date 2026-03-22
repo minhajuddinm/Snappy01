@@ -92,8 +92,16 @@ public class FingerGunShooter : MonoBehaviour
         // --- Spawn paintball ---
         GameObject ball = Instantiate(paintballPrefab, spawnPos, Quaternion.LookRotation(fingerDir));
 
+        ball.tag = "Paintball";
+
         PaintballSticker sticker = ball.AddComponent<PaintballSticker>();
         sticker.damageValue = damagePerShot;
+
+        Renderer rend = ball.GetComponent<Renderer>();
+if (rend != null)
+{
+    rend.material.color = new Color(1.0f, 0.5f, 0.0f);
+}
         ball.GetComponent<Renderer>().material.color = new Color(1.0f, 0.5f, 0.0f);
 
         Rigidbody rb = ball.GetComponent<Rigidbody>();

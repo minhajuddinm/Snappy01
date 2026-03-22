@@ -8,27 +8,32 @@ public class TargetSlime : MonoBehaviour
 
     [Header("Effects")]
     public ParticleSystem DestroyedEffect;
-    
+
     private bool m_Destroyed = false;
     private float m_CurrentHealth;
 
     void Awake()
     {
         m_CurrentHealth = health;
-        
-        // Ensure the target is on the correct layer
+
         int targetLayer = LayerMask.NameToLayer("Target");
         if (targetLayer != -1) gameObject.layer = targetLayer;
     }
 
-    // Backup: If the ball is too fast for a collision, a Trigger will often catch it
     private void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("Paintball")) 
+        if (!other.CompareTag("Paintball")) return;
+
+        PaintballSticker sticker = other.GetComponent<PaintballSticker>();
+
+        float damage = 1.0f;
+        if (sticker != null)
         {
-            Got(1.0f);
-            Destroy(other.gameObject); // Clean up the paintball
+            damage = sticker.damageValue;
         }
+
+        Got(damage);
+        Destroy(other.gameObject);
     }
 
     public void Got(float damage)
@@ -53,7 +58,6 @@ public class TargetSlime : MonoBehaviour
             Instantiate(DestroyedEffect, transform.position, Quaternion.identity);
         }
 
-        // Notify GameSystem if it exists
         if (GameSystem.Instance != null)
             GameSystem.Instance.TargetDestroyed(pointValue);
 
