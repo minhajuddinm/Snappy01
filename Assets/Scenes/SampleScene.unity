@@ -703,7 +703,7 @@ MonoBehaviour:
   finalText: "Congratulations\u2026 you saved me. You are my true hero\u2026 help
     me defeat more germs\u2026 please."
   playerCam: {fileID: 682369404}
-  distanceInFront: 1.5
+  distanceInFront: 2
   heightOffset: -0.2
 --- !u!1 &381784006
 GameObject:
@@ -1504,7 +1504,7 @@ PrefabInstance:
       objectReference: {fileID: 69317893}
     - target: {fileID: 7250487218248420703, guid: 180e591a0fd886444a841eca24d939fc, type: 3}
       propertyPath: shootForce
-      value: 20
+      value: 15
       objectReference: {fileID: 0}
     - target: {fileID: 7250487218248420703, guid: 180e591a0fd886444a841eca24d939fc, type: 3}
       propertyPath: spawnPoint
@@ -1536,7 +1536,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7250487218248420703, guid: 180e591a0fd886444a841eca24d939fc, type: 3}
       propertyPath: indexThreshold
-      value: 0.257
+      value: 0.143
       objectReference: {fileID: 0}
     - target: {fileID: 7250487218248420703, guid: 180e591a0fd886444a841eca24d939fc, type: 3}
       propertyPath: leftSpawnPoint

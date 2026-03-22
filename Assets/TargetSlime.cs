@@ -9,8 +9,11 @@ public class TargetSlime : MonoBehaviour
     [Header("Effects")]
     public ParticleSystem DestroyedEffect;
 
+    [Header("Audio")]
+    public AudioClip killSound;
+
     [Header("Spawner")]
-public GermSpawnerMR spawner;
+    public GermSpawnerMR spawner;
 
     private bool m_Destroyed = false;
     private float m_CurrentHealth;
@@ -20,7 +23,8 @@ public GermSpawnerMR spawner;
         m_CurrentHealth = health;
 
         int targetLayer = LayerMask.NameToLayer("Target");
-        if (targetLayer != -1) gameObject.layer = targetLayer;
+        if (targetLayer != -1)
+            gameObject.layer = targetLayer;
     }
 
     private void OnTriggerEnter(Collider other)
@@ -59,33 +63,50 @@ public GermSpawnerMR spawner;
 
         Debug.Log("Slime died!");
 
+        // 🔥 Particle effect
         if (DestroyedEffect != null)
         {
             Instantiate(DestroyedEffect, transform.position, Quaternion.identity);
         }
 
+        // 🔊 Kill sound (3D at slime position)
+        if (killSound != null)
+        {
+            AudioSource.PlayClipAtPoint(killSound, transform.position);
+        }
+        else
+        {
+            Debug.LogWarning("Kill sound not assigned!");
+        }
+
+        // 🎯 Score system
         if (GameSystem.Instance != null)
         {
             GameSystem.Instance.TargetDestroyed(pointValue);
         }
 
-        RobotPraiseSystem praise = FindObjectOfType<RobotPraiseSystem>();
-        if (praise != null)
-        {
-            praise.AddKill();
-            Debug.Log("Told RobotPraiseSystem to add kill.");
-        }
-        else
-        {
-            Debug.LogWarning("RobotPraiseSystem not found in scene!");
-        }
-
-        GermSpawnerMR spawner = FindObjectOfType<GermSpawnerMR>();
+        // 📉 Update spawner count
         if (spawner != null)
         {
             spawner.OnGermDeathOnlyCount();
         }
+        else
+        {
+            Debug.LogWarning("Spawner not assigned to this slime!");
+        }
 
+        // 🤖 Notify robot praise system
+        RobotPraiseSystem praise = FindObjectOfType<RobotPraiseSystem>();
+        if (praise != null)
+        {
+            praise.AddKill();
+        }
+        else
+        {
+            Debug.LogWarning("RobotPraiseSystem not found!");
+        }
+
+        // 🧹 Disable slime
         gameObject.SetActive(false);
     }
 }

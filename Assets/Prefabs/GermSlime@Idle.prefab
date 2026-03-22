@@ -150,6 +150,8 @@ MonoBehaviour:
   health: 0.5
   pointValue: 10
   DestroyedEffect: {fileID: 8608183087981362248, guid: bb4e6b12de56c2a4f8db55c47797b43c, type: 3}
+  killSound: {fileID: 8300000, guid: d42c4b5b9474de94c9104695770c1d97, type: 3}
+  spawner: {fileID: 0}
 --- !u!114 &6423405139909165442
 MonoBehaviour:
   m_ObjectHideFlags: 0
