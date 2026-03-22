@@ -19,16 +19,31 @@ public class RobotDialogue : MonoBehaviour
     [TextArea]
     public string endText = "I’ll stay behind you… okay?";
 
+    [Header("Gameplay References")]
+    public FingerGunShooter fingerGunShooter;
+    public GermSpawnerMR germSpawner;
+
     private bool introPlayed = false;
     private bool endPlayed = false;
+    private bool gameplayStarted = false;
 
     public bool IsIntroFinished
     {
         get
         {
-            if (introClip == null) return introPlayed;
-            if (audioSource == null) return introPlayed;
-            return introPlayed && !audioSource.isPlaying;
+            if (!introPlayed) return false;
+            if (introClip == null) return true;
+            if (audioSource == null) return true;
+            return !audioSource.isPlaying;
+        }
+    }
+
+    void Update()
+    {
+        if (!gameplayStarted && IsIntroFinished)
+        {
+            gameplayStarted = true;
+            StartGameplay();
         }
     }
 
@@ -50,6 +65,10 @@ public class RobotDialogue : MonoBehaviour
             audioSource.clip = introClip;
             audioSource.Play();
         }
+        else
+        {
+            Debug.LogWarning("RobotDialogue: Intro audioSource or introClip is missing. Gameplay will still start.");
+        }
     }
 
     public void PlayEnd()
@@ -69,5 +88,32 @@ public class RobotDialogue : MonoBehaviour
         {
             audioSource.PlayOneShot(endClip);
         }
+    }
+
+    void StartGameplay()
+    {
+        Debug.Log("RobotDialogue: Intro finished. Starting gameplay.");
+
+        if (fingerGunShooter != null)
+        {
+            fingerGunShooter.canShoot = true;
+            Debug.Log("RobotDialogue: Shooting enabled.");
+        }
+        else
+        {
+            Debug.LogWarning("RobotDialogue: FingerGunShooter reference is missing.");
+        }
+
+        if (germSpawner != null)
+        {
+            germSpawner.StartSpawning();
+            Debug.Log("RobotDialogue: Germ spawning started.");
+        }
+        else
+        {
+            Debug.LogWarning("RobotDialogue: GermSpawnerMR reference is missing.");
+        }
+
+        PlayEnd();
     }
 }

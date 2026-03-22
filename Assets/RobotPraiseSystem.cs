@@ -14,10 +14,17 @@ public class RobotPraiseSystem : MonoBehaviour
     [Header("Final Dialogue")]
     public RobotFinalDialogue finalDialogue;
 
+    [Header("Gameplay References")]
+    public FingerGunShooter fingerGunShooter;
+    public GermSpawnerMR germSpawner;
+
     private int killCount = 0;
+    private bool gameEnded = false;
 
     public void AddKill()
     {
+        if (gameEnded) return;
+
         killCount++;
         Debug.Log("Kill count = " + killCount);
 
@@ -32,11 +39,38 @@ public class RobotPraiseSystem : MonoBehaviour
                 break;
 
             case 15:
-                PlayLine(clip15, "You are protecting us... you are a hero.");
+                gameEnded = true;
+
+                Debug.Log("Reached 15 kills. Ending gameplay.");
+
+                if (fingerGunShooter != null)
+                {
+                    fingerGunShooter.canShoot = false;
+                    Debug.Log("RobotPraiseSystem: Shooting disabled.");
+                }
+                else
+                {
+                    Debug.LogWarning("RobotPraiseSystem: FingerGunShooter reference is missing.");
+                }
+
+                if (germSpawner != null)
+                {
+                    germSpawner.StopSpawning();
+                    germSpawner.DisableAllGerms();
+                    Debug.Log("RobotPraiseSystem: Germ spawning stopped and remaining germs cleared.");
+                }
+                else
+                {
+                    Debug.LogWarning("RobotPraiseSystem: GermSpawnerMR reference is missing.");
+                }
 
                 if (finalDialogue != null)
                 {
                     finalDialogue.PlayFinalDialogue();
+                }
+                else
+                {
+                    Debug.LogWarning("RobotPraiseSystem: FinalDialogue reference is missing.");
                 }
                 break;
         }

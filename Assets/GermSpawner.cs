@@ -77,6 +77,22 @@ public class GermSpawnerMR : MonoBehaviour
         Debug.Log("Germ count reduced. Current germs: " + currentGerms);
     }
 
+    public void DisableAllGerms()
+    {
+        TargetSlime[] allGerms = FindObjectsOfType<TargetSlime>(true);
+
+        foreach (TargetSlime germ in allGerms)
+        {
+            if (germ != null && germ.gameObject.activeSelf)
+            {
+                germ.gameObject.SetActive(false);
+            }
+        }
+
+        currentGerms = 0;
+        Debug.Log("All active germs disabled.");
+    }
+
     void SpawnOnFloor()
     {
         if (room == null) return;

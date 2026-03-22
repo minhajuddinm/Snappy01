@@ -569,6 +569,8 @@ MonoBehaviour:
   introText: "Hi! I\u2019m Snappy, your robot friend. Can you protect me from the
     germs?"
   endText: "I\u2019m gonna stand behind you!"
+  fingerGunShooter: {fileID: 550517475}
+  germSpawner: {fileID: 1479349847}
 --- !u!82 &360748980
 AudioSource:
   m_ObjectHideFlags: 0
@@ -684,6 +686,8 @@ MonoBehaviour:
   clip15: {fileID: 0}
   clip20: {fileID: 8300000, guid: 7fe5be3c1974ff147a4f8b24e110ae12, type: 3}
   finalDialogue: {fileID: 360748982}
+  fingerGunShooter: {fileID: 550517475}
+  germSpawner: {fileID: 1479349847}
 --- !u!114 &360748982
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -741,6 +745,17 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 7578975835679874436, guid: 180e591a0fd886444a841eca24d939fc, type: 3}
   m_PrefabInstance: {fileID: 1437826700}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &550517475 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 7250487218248420703, guid: 180e591a0fd886444a841eca24d939fc, type: 3}
+  m_PrefabInstance: {fileID: 1437826700}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 550517474}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5f326da7eddee1149a67c2d290decf07, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!82 &550517477
 AudioSource:
   m_ObjectHideFlags: 0

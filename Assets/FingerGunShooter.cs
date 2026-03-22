@@ -18,23 +18,33 @@ public class FingerGunShooter : MonoBehaviour
     public Transform rightSpawnPoint;
 
     [Header("Audio")]
-public AudioSource audioSource;
-public AudioClip shootSound;
-[Range(0.5f, 1.5f)] public float pitchVariation = 0.1f;
+    public AudioSource audioSource;
+    public AudioClip shootSound;
+    [Range(0.0f, 0.5f)] public float pitchVariation = 0.1f;
+
+    [Header("Gameplay Control")]
+    public bool canShoot = false;
 
     [Range(0, 1)] public float indexThreshold = 0.7f;
 
-    private bool hasFiredLeft  = false;
+    private bool hasFiredLeft = false;
     private bool hasFiredRight = false;
 
     void Update()
     {
-        if (leftHand.IsTracked)  CheckIndex(leftHand,  leftSkeleton,  ref hasFiredLeft,  leftSpawnPoint,  "Left");
-        if (rightHand.IsTracked) CheckIndex(rightHand, rightSkeleton, ref hasFiredRight, rightSpawnPoint, "Right");
+        if (!canShoot) return;
+
+        if (leftHand != null && leftHand.IsTracked)
+            CheckIndex(leftHand, leftSkeleton, ref hasFiredLeft, leftSpawnPoint, "Left");
+
+        if (rightHand != null && rightHand.IsTracked)
+            CheckIndex(rightHand, rightSkeleton, ref hasFiredRight, rightSpawnPoint, "Right");
     }
 
     void CheckIndex(OVRHand hand, OVRSkeleton skeleton, ref bool hasFired, Transform spawnPoint, string handLabel)
     {
+        if (hand == null) return;
+
         float indexCurl = hand.GetFingerPinchStrength(OVRHand.HandFinger.Index);
 
         Debug.Log($"[FingerGun] {handLabel} index curl: {indexCurl:F2} | hasFired: {hasFired}");
@@ -59,12 +69,18 @@ public AudioClip shootSound;
 
     void ShootFromIndex(OVRSkeleton skeleton, Transform spawnPoint, string handLabel)
     {
+        if (paintballPrefab == null)
+        {
+            Debug.LogError("[FingerGun] Paintball prefab is not assigned.");
+            return;
+        }
+
         Vector3 spawnPos;
         Vector3 fingerDir;
 
         if (spawnPoint != null)
         {
-            spawnPos  = spawnPoint.position;
+            spawnPos = spawnPoint.position;
             fingerDir = spawnPoint.forward;
             Debug.Log($"[FingerGun] {handLabel} spawning from spawnPoint at {spawnPos}");
         }
@@ -72,15 +88,25 @@ public AudioClip shootSound;
         {
             Debug.LogWarning($"[FingerGun] {handLabel} has no spawnPoint assigned — falling back to index tip.");
 
-            Transform indexTip     = null;
+            if (skeleton == null || skeleton.Bones == null)
+            {
+                Debug.LogError($"[FingerGun] {handLabel} skeleton is missing. Aborting shot.");
+                return;
+            }
+
+            Transform indexTip = null;
             Transform indexKnuckle = null;
 
             foreach (var bone in skeleton.Bones)
             {
                 switch (bone.Id)
                 {
-                    case OVRSkeleton.BoneId.Hand_IndexTip: indexTip     = bone.Transform; break;
-                    case OVRSkeleton.BoneId.Hand_Index1:   indexKnuckle = bone.Transform; break;
+                    case OVRSkeleton.BoneId.Hand_IndexTip:
+                        indexTip = bone.Transform;
+                        break;
+                    case OVRSkeleton.BoneId.Hand_Index1:
+                        indexKnuckle = bone.Transform;
+                        break;
                 }
             }
 
@@ -91,40 +117,42 @@ public AudioClip shootSound;
             }
 
             fingerDir = (indexTip.position - indexKnuckle.position).normalized;
-            spawnPos  = indexTip.position + fingerDir * 0.05f;
+            spawnPos = indexTip.position + fingerDir * 0.05f;
         }
 
         // --- Spawn paintball ---
         GameObject ball = Instantiate(paintballPrefab, spawnPos, Quaternion.LookRotation(fingerDir));
-
-        // 🔊 Play shooting sound
-if (audioSource != null && shootSound != null)
-{
-    audioSource.pitch = Random.Range(1f - pitchVariation, 1f + pitchVariation);
-    audioSource.PlayOneShot(shootSound);
-}
-else
-{
-    Debug.LogWarning("Shoot sound or AudioSource not assigned!");
-}
-
         ball.tag = "Paintball";
 
-        PaintballSticker sticker = ball.AddComponent<PaintballSticker>();
+        // 🔊 Play shooting sound
+        if (audioSource != null && shootSound != null)
+        {
+            audioSource.pitch = Random.Range(1f - pitchVariation, 1f + pitchVariation);
+            audioSource.PlayOneShot(shootSound);
+        }
+        else
+        {
+            Debug.LogWarning("Shoot sound or AudioSource not assigned!");
+        }
+
+        PaintballSticker sticker = ball.GetComponent<PaintballSticker>();
+        if (sticker == null)
+        {
+            sticker = ball.AddComponent<PaintballSticker>();
+        }
         sticker.damageValue = damagePerShot;
 
         Renderer rend = ball.GetComponent<Renderer>();
-if (rend != null)
-{
-    rend.material.color = new Color(1.0f, 0.5f, 0.0f);
-}
-        ball.GetComponent<Renderer>().material.color = new Color(1.0f, 0.5f, 0.0f);
+        if (rend != null)
+        {
+            rend.material.color = new Color(1.0f, 0.5f, 0.0f);
+        }
 
         Rigidbody rb = ball.GetComponent<Rigidbody>();
         if (rb != null)
         {
             rb.isKinematic = false;
-            rb.useGravity  = true;
+            rb.useGravity = true;
             rb.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic;
             rb.linearVelocity = Vector3.zero;
             rb.AddForce(fingerDir * shootForce, ForceMode.Impulse);
