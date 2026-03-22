@@ -17,6 +17,11 @@ public class FingerGunShooter : MonoBehaviour
     public Transform leftSpawnPoint;
     public Transform rightSpawnPoint;
 
+    [Header("Audio")]
+public AudioSource audioSource;
+public AudioClip shootSound;
+[Range(0.5f, 1.5f)] public float pitchVariation = 0.1f;
+
     [Range(0, 1)] public float indexThreshold = 0.7f;
 
     private bool hasFiredLeft  = false;
@@ -91,6 +96,17 @@ public class FingerGunShooter : MonoBehaviour
 
         // --- Spawn paintball ---
         GameObject ball = Instantiate(paintballPrefab, spawnPos, Quaternion.LookRotation(fingerDir));
+
+        // 🔊 Play shooting sound
+if (audioSource != null && shootSound != null)
+{
+    audioSource.pitch = Random.Range(1f - pitchVariation, 1f + pitchVariation);
+    audioSource.PlayOneShot(shootSound);
+}
+else
+{
+    Debug.LogWarning("Shoot sound or AudioSource not assigned!");
+}
 
         ball.tag = "Paintball";
 
