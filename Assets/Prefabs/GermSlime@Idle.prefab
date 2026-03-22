@@ -81,6 +81,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 100002, guid: fc0abf94747c84340bd09191e02e88d3, type: 3}
       insertIndex: -1
       addedObject: {fileID: -4295022727809062522}
+    - targetCorrespondingSourceObject: {fileID: 100002, guid: fc0abf94747c84340bd09191e02e88d3, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 6423405139909165442}
   m_SourcePrefab: {fileID: 100100000, guid: fc0abf94747c84340bd09191e02e88d3, type: 3}
 --- !u!1 &4510372319125445038 stripped
 GameObject:
@@ -146,4 +149,21 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   health: 1
   pointValue: 10
-  DestroyedEffect: {fileID: 0}
+  DestroyedEffect: {fileID: 8608183087981362248, guid: bb4e6b12de56c2a4f8db55c47797b43c, type: 3}
+--- !u!114 &6423405139909165442
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4510372319125445038}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 857bd73e6d92fb84da3431adf6714f2c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  moveSpeed: 0.3
+  rotationSpeed: 4
+  waitTime: 1
+  moveRange: 2
+  floorOffsetY: 0.05

@@ -5,3 +5,10 @@ PrefabImporter:
   userData: 
   assetBundleName: 
   assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 149310
+  packageName: 'Unity Learn | Creator Kit: FPS | URP'
+  packageVersion: 5.0
+  assetPath: Assets/Creator Kit - FPS/Prefabs/Targets/BloodCellTarget.prefab
+  uploadId: 873426

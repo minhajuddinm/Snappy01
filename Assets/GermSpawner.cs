@@ -9,19 +9,29 @@ public class GermSpawnerMR : MonoBehaviour
     public int maxGerms = 10;
     public float spawnInterval = 2f;
 
-    public float spawnRange = 2.5f; // how far from center
+    [Header("Spawn Area")]
+    public float spawnRange = 2.5f;
+    public float floorOffsetY = 0.05f;
+
+    [Header("Player Safety")]
+    public Transform playerCam;
+    public float playerSafeRadius = 1.0f;
 
     private int currentGerms = 0;
     private MRUKRoom room;
 
     void Start()
     {
+        if (playerCam == null && Camera.main != null)
+        {
+            playerCam = Camera.main.transform;
+        }
+
         StartCoroutine(Initialize());
     }
 
     IEnumerator Initialize()
     {
-        // Wait for MRUK to load room
         yield return new WaitUntil(() => MRUK.Instance != null && MRUK.Instance.GetCurrentRoom() != null);
 
         room = MRUK.Instance.GetCurrentRoom();
@@ -57,20 +67,42 @@ public class GermSpawnerMR : MonoBehaviour
         }
 
         Vector3 center = floor.GetAnchorCenter();
+        Vector3 spawnPos = center;
 
-        float randomX = Random.Range(-spawnRange, spawnRange);
-        float randomZ = Random.Range(-spawnRange, spawnRange);
+        bool foundValidPosition = false;
 
-        Vector3 spawnPos = center + new Vector3(randomX, 0.05f, randomZ);
+        for (int i = 0; i < 20; i++)
+        {
+            float randomX = Random.Range(-spawnRange, spawnRange);
+            float randomZ = Random.Range(-spawnRange, spawnRange);
+
+            Vector3 testPos = center + new Vector3(randomX, floorOffsetY, randomZ);
+
+            if (playerCam != null)
+            {
+                Vector3 playerFlat = new Vector3(playerCam.position.x, 0f, playerCam.position.z);
+                Vector3 spawnFlat = new Vector3(testPos.x, 0f, testPos.z);
+
+                float distanceToPlayer = Vector3.Distance(playerFlat, spawnFlat);
+
+                if (distanceToPlayer < playerSafeRadius)
+                {
+                    continue;
+                }
+            }
+
+            spawnPos = testPos;
+            foundValidPosition = true;
+            break;
+        }
+
+        if (!foundValidPosition)
+        {
+            Debug.Log("Could not find a valid spawn position away from player.");
+            return;
+        }
 
         GameObject germ = Instantiate(germPrefab, spawnPos, Quaternion.identity);
-
-        // Track death
-       /* EnemyHealth health = germ.GetComponent<EnemyHealth>();
-        if (health != null)
-        {
-            health.onDeath += OnGermDeath;
-        }*/
 
         currentGerms++;
     }
