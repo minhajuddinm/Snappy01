@@ -147,7 +147,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a1610cae8929a064ab98a985b914ef6a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  health: 1
+  health: 0.5
   pointValue: 10
   DestroyedEffect: {fileID: 8608183087981362248, guid: bb4e6b12de56c2a4f8db55c47797b43c, type: 3}
 --- !u!114 &6423405139909165442

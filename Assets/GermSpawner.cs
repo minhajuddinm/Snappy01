@@ -20,6 +20,8 @@ public class GermSpawnerMR : MonoBehaviour
     private int currentGerms = 0;
     private MRUKRoom room;
 
+    private bool canSpawn = false;
+
     void Start()
     {
         if (playerCam == null && Camera.main != null)
@@ -36,8 +38,7 @@ public class GermSpawnerMR : MonoBehaviour
 
         room = MRUK.Instance.GetCurrentRoom();
 
-        Debug.Log("MRUK Ready → Spawning on floor");
-
+        Debug.Log("MRUK Ready → Germ spawner initialized");
         StartCoroutine(SpawnLoop());
     }
 
@@ -45,13 +46,25 @@ public class GermSpawnerMR : MonoBehaviour
     {
         while (true)
         {
-            if (currentGerms < maxGerms)
+            if (canSpawn && currentGerms < maxGerms)
             {
                 SpawnOnFloor();
             }
 
             yield return new WaitForSeconds(spawnInterval);
         }
+    }
+
+    public void StartSpawning()
+    {
+        canSpawn = true;
+        Debug.Log("Germ spawning started!");
+    }
+
+    public void StopSpawning()
+    {
+        canSpawn = false;
+        Debug.Log("Germ spawning stopped!");
     }
 
     void SpawnOnFloor()
@@ -102,8 +115,7 @@ public class GermSpawnerMR : MonoBehaviour
             return;
         }
 
-        GameObject germ = Instantiate(germPrefab, spawnPos, Quaternion.identity);
-
+        Instantiate(germPrefab, spawnPos, Quaternion.identity);
         currentGerms++;
     }
 
