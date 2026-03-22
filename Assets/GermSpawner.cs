@@ -22,7 +22,6 @@ public class GermSpawnerMR : MonoBehaviour
 
     private int currentGerms = 0;
     private bool canSpawn = false;
-
     private MRUKRoom room;
 
     void Start()
@@ -68,6 +67,14 @@ public class GermSpawnerMR : MonoBehaviour
     {
         canSpawn = false;
         Debug.Log("Germ spawning stopped!");
+    }
+
+    public void OnGermDeathOnlyCount()
+    {
+        currentGerms--;
+        if (currentGerms < 0) currentGerms = 0;
+
+        Debug.Log("Germ count reduced. Current germs: " + currentGerms);
     }
 
     void SpawnOnFloor()
@@ -121,7 +128,19 @@ public class GermSpawnerMR : MonoBehaviour
             return;
         }
 
-        Instantiate(prefabToSpawn, spawnPos, Quaternion.identity);
+        GameObject newGerm = Instantiate(prefabToSpawn, spawnPos, Quaternion.identity);
+
+        TargetSlime slime = newGerm.GetComponentInChildren<TargetSlime>();
+        if (slime != null)
+        {
+            slime.spawner = this;
+            Debug.Log("Spawner assigned to slime: " + newGerm.name);
+        }
+        else
+        {
+            Debug.LogWarning("Spawned germ does not have TargetSlime script on root or children.");
+        }
+
         currentGerms++;
     }
 
@@ -132,11 +151,5 @@ public class GermSpawnerMR : MonoBehaviour
         if (germPrefabA == null && germPrefabB != null) return germPrefabB;
 
         return Random.value < 0.5f ? germPrefabA : germPrefabB;
-    }
-
-    public void OnGermDeath()
-    {
-        currentGerms--;
-        if (currentGerms < 0) currentGerms = 0;
     }
 }

@@ -9,6 +9,9 @@ public class TargetSlime : MonoBehaviour
     [Header("Effects")]
     public ParticleSystem DestroyedEffect;
 
+    [Header("Spawner")]
+public GermSpawnerMR spawner;
+
     private bool m_Destroyed = false;
     private float m_CurrentHealth;
 
@@ -51,7 +54,10 @@ public class TargetSlime : MonoBehaviour
 
     void Die()
     {
+        if (m_Destroyed) return;
         m_Destroyed = true;
+
+        Debug.Log("Slime died!");
 
         if (DestroyedEffect != null)
         {
@@ -59,7 +65,26 @@ public class TargetSlime : MonoBehaviour
         }
 
         if (GameSystem.Instance != null)
+        {
             GameSystem.Instance.TargetDestroyed(pointValue);
+        }
+
+        RobotPraiseSystem praise = FindObjectOfType<RobotPraiseSystem>();
+        if (praise != null)
+        {
+            praise.AddKill();
+            Debug.Log("Told RobotPraiseSystem to add kill.");
+        }
+        else
+        {
+            Debug.LogWarning("RobotPraiseSystem not found in scene!");
+        }
+
+        GermSpawnerMR spawner = FindObjectOfType<GermSpawnerMR>();
+        if (spawner != null)
+        {
+            spawner.OnGermDeathOnlyCount();
+        }
 
         gameObject.SetActive(false);
     }

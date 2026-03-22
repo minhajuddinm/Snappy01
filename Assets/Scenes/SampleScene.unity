@@ -581,7 +581,7 @@ AudioSource:
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 0}
   m_Resource: {fileID: 0}
-  m_PlayOnAwake: 1
+  m_PlayOnAwake: 0
   m_Volume: 1
   m_Pitch: 1
   Loop: 0
@@ -626,7 +626,7 @@ AudioSource:
     m_Curve:
     - serializedVersion: 3
       time: 0
-      value: 0
+      value: 1
       inSlope: 0
       outSlope: 0
       tangentMode: 0
@@ -666,6 +666,45 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!114 &360748981
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 360748976}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 925040d1facd21a47a82823b85967bb0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  audioSource: {fileID: 360748980}
+  clip5: {fileID: 8300000, guid: 91039070e22e09d4da224325d710eb40, type: 3}
+  clip10: {fileID: 8300000, guid: 4bc7cf55c8f6421419f461894c95f62c, type: 3}
+  clip15: {fileID: 0}
+  clip20: {fileID: 8300000, guid: 7fe5be3c1974ff147a4f8b24e110ae12, type: 3}
+  finalDialogue: {fileID: 360748982}
+--- !u!114 &360748982
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 360748976}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c0fbbbf6dd8121045b992e396d193e82, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  audioSource: {fileID: 360748980}
+  finalClip: {fileID: 8300000, guid: e9f71a4c1173c0e48a42a1d62dc1c04d, type: 3}
+  animator: {fileID: 360748978}
+  finalTrigger: Final
+  finalText: "Congratulations\u2026 you saved me. You are my true hero\u2026 help
+    me defeat more germs\u2026 please."
+  playerCam: {fileID: 682369404}
+  distanceInFront: 1.5
+  heightOffset: -0.2
 --- !u!1 &381784006
 GameObject:
   m_ObjectHideFlags: 0
@@ -2360,6 +2399,12 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 3522074894479164223, guid: b5ded03589c766d4a81965028abab00f, type: 3}
       insertIndex: -1
       addedObject: {fileID: 360748979}
+    - targetCorrespondingSourceObject: {fileID: 3522074894479164223, guid: b5ded03589c766d4a81965028abab00f, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 360748981}
+    - targetCorrespondingSourceObject: {fileID: 3522074894479164223, guid: b5ded03589c766d4a81965028abab00f, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 360748982}
   m_SourcePrefab: {fileID: 100100000, guid: b5ded03589c766d4a81965028abab00f, type: 3}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
